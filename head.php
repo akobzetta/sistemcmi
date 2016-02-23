@@ -158,8 +158,8 @@ if(isset($_POST["loginuser"]))
 				{
 					if($_POST["username"] != null && $_POST["pwd"] != null)
 					{
-						$username = mysql_real_escape_string($_POST["username"]);
-						$pwd = mysql_real_escape_string($_POST["pwd"]);
+						$username = mysqli_real_escape_string($conn, $_POST["username"]);
+						$pwd = mysqli_real_escape_string($conn, $_POST["pwd"]);
 						$login1 = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$username}'");
 						if(mysqli_num_rows($login1) < 1)
 						{
