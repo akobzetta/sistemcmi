@@ -30,9 +30,9 @@
 				{
 					if($_POST["new"] == $_POST["new1"])
 					{
-						$current = mysql_real_escape_string($_POST["current"]);
-						$new = mysql_real_escape_string($_POST["new"]);
-						$new1 = mysql_real_escape_string($_POST["new1"]);
+						$current = mysqli_real_escape_string($conn, $_POST["current"]);
+						$new = mysqli_real_escape_string($conn, $_POST["new"]);
+						$new1 = mysqli_real_escape_string($conn, $_POST["new1"]);
 						$select = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_COOKIE["userlogin"]}'");
 						while($row = mysqli_fetch_assoc($select))
 						{
