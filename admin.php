@@ -16,10 +16,10 @@
 	{
 		if($_POST["username"] != null && $_POST["pwd"] != null && $_POST["rank"] != null)
 		{
-		$username = mysql_real_escape_string($_POST["username"]);
-		$pwd = mysql_real_escape_string($_POST["pwd"]);
+		$username = mysqli_real_escape_string($conn, $_POST["username"]);
+		$pwd = mysqli_real_escape_string($conn, $_POST["pwd"]);
 		$password = password_hash($pwd, PASSWORD_DEFAULT);
-		$rank = mysql_real_escape_string($_POST["rank"]);
+		$rank = mysqli_real_escape_string($conn, $_POST["rank"]);
 		$usercheck = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$username}' LIMIT 1");
 		if(mysqli_num_rows($usercheck) >= 1)
 		{
