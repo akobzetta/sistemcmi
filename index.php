@@ -25,12 +25,12 @@
 								$no = 1;
 							}
 						}	
-						$tterima = mysql_real_escape_string($_POST["tterima"]);
-						$klt = mysql_real_escape_string($_POST["klt"]);
-						$tsurat = mysql_real_escape_string($_POST["tsurat"]);
-						$dari = mysql_real_escape_string($_POST["dari"]);
-						$perkara = mysql_real_escape_string($_POST["perkara"]);
-						$kepada = mysql_real_escape_string($_POST["kepada"]);
+						$tterima = mysqli_real_escape_string($conn, $_POST["tterima"]);
+						$klt = mysqli_real_escape_string($conn, $_POST["klt"]);
+						$tsurat = mysqli_real_escape_string($conn, $_POST["tsurat"]);
+						$dari = mysqli_real_escape_string($conn, $_POST["dari"]);
+						$perkara = mysqli_real_escape_string($conn, $_POST["perkara"]);
+						$kepada = mysqli_real_escape_string($conn, $_POST["kepada"]);
 						mysqli_query($conn, "INSERT INTO record (no, tterima, klt, tsurat, dari, perkara, kepada, time) VALUES ('{$no}', '{$tterima}', '{$klt}', '{$tsurat}', '{$dari}', '{$perkara}', '{$kepada}', '".time()."')");
 						?>
 						<div class="alert alert-success">
@@ -212,12 +212,12 @@ if(isset($_POST["edit"]))
 }
 if(isset($_POST["save"]))
 {
-	$tterima = mysql_real_escape_string($_POST["tterima"]);
-	$klt = mysql_real_escape_string($_POST["klt"]);
-	$tsurat = mysql_real_escape_string($_POST["tsurat"]);
-	$dari = mysql_real_escape_string($_POST["dari"]);
-	$perkara = mysql_real_escape_string($_POST["perkara"]);
-	$kepada = mysql_real_escape_string($_POST["kepada"]);
+	$tterima = mysqli_real_escape_string($conn, $_POST["tterima"]);
+	$klt = mysqli_real_escape_string($conn, $_POST["klt"]);
+	$tsurat = mysqli_real_escape_string($conn, $_POST["tsurat"]);
+	$dari = mysqli_real_escape_string($conn, $_POST["dari"]);
+	$perkara = mysqli_real_escape_string($conn, $_POST["perkara"]);
+	$kepada = mysqli_real_escape_string($conn, $_POST["kepada"]);
 	mysqli_query($conn, "UPDATE record SET tterima = '{$tterima}', klt = '{$klt}', tsurat = '{$tsurat}', dari = '{$dari}', perkara = '{$perkara}', kepada = '{$kepada}' WHERE id = '{$_POST['id']}'");
 ?>
 <div class="alert alert-success">
