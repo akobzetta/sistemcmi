@@ -200,12 +200,12 @@ if (isset($_POST["edit"]))
 
 if (isset($_POST["save"]))
 {
-	$tterima = mysql_real_escape_string($_POST["tterima"]);
-	$klt = mysql_real_escape_string($_POST["klt"]);
-	$tsurat = mysql_real_escape_string($_POST["tsurat"]);
-	$dari = mysql_real_escape_string($_POST["dari"]);
-	$perkara = mysql_real_escape_string($_POST["perkara"]);
-	$kepada = mysql_real_escape_string($_POST["kepada"]);
+	$tterima = mysqli_real_escape_string($conn, $_POST["tterima"]);
+	$klt = mysqli_real_escape_string($conn, $_POST["klt"]);
+	$tsurat = mysqli_real_escape_string($conn, $_POST["tsurat"]);
+	$dari = mysqli_real_escape_string($conn, $_POST["dari"]);
+	$perkara = mysqli_real_escape_string($conn, $_POST["perkara"]);
+	$kepada = mysqli_real_escape_string($conn, $_POST["kepada"]);
 	mysqli_query($conn, "UPDATE record SET tterima = '{$tterima}', klt = '{$klt}', tsurat = '{$tsurat}', dari = '{$dari}', perkara = '{$perkara}', kepada = '{$kepada}' WHERE id = '{$_POST['id']}'");
 ?>
 <div class="alert alert-success">
@@ -215,6 +215,53 @@ if (isset($_POST["save"]))
 <?php
 }
 
+error_reporting(E_ALL);
+ini_set('display_errors', TRUE);
+/** Error reporting */
+ini_set('display_startup_errors', TRUE);
+define('EOL', (PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
+require_once dirname(__FILE__) . '/Classes/PHPExcel.php';
+
+/* Include PHPExcel */
+$objPHPExcel = new PHPExcel(); // Create new PHPExcel object
+$objPHPExcel->getProperties()->setCreator("Sistem Surat Masuk") // Set document properties
+->setLastModifiedBy("CMI")->setTitle("Sistem Surat Masuk")->setSubject("Data Surat Masuk")->setDescription("Document sistem surat masuk.")->setKeywords("Generate by sistem surat masuk.")->setCategory("Surat Masuk");
+$objPHPExcel->setActiveSheetIndex(0);
+$objPHPExcel->getActiveSheet()->setCellValue('A1', 'No.')->setCellValue('B1', 'Tarikh Terima')->setCellValue('C1', 'Tarikh Surat')->setCellValue('D1', 'Dari')->setCellValue('E1', 'Kepada')->setCellValue('F1', 'Perkara')->setCellValue('G1', 'Klt.');
+$objPHPExcel->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
+$objPHPExcel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(7);
+$objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(7);
+$objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(19);
+$objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(11);
+$objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(33);
+$objPHPExcel->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getStyle('A1:G1')->applyFromArray(array(
+	'font' => array(
+		'bold' => true
+	) ,
+	'borders' => array(
+		'allborders' => array(
+			'style' => PHPExcel_Style_Border::BORDER_THICK,
+			'rgb' => '808080'
+		)
+	) ,
+	'fill' => array(
+		'type' => PHPExcel_Style_Fill::FILL_GRADIENT_LINEAR,
+		'rotation' => 90,
+		'startcolor' => array(
+			'argb' => 'FFA0A0A0'
+		) ,
+		'endcolor' => array(
+			'argb' => 'FFFFFFFF'
+		)
+	) ,
+	'alignment' => array(
+		'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+		'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+	)
+));
+$i = 1;
 ?>
   <table class="table table-striped well">
     <thead>
@@ -234,10 +281,29 @@ if (isset($_POST["save"]))
 
 if (isset($_POST["sperkara"]))
 {
-	$search = mysql_real_escape_string($_POST["search"]);
+	$search = mysqli_real_escape_string($conn, $_POST["search"]);
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE perkara LIKE '%{$search}%' ORDER BY id DESC;");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BPerkara: &B&U' . $search . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -263,10 +329,29 @@ if (isset($_POST["sperkara"]))
 
 if (isset($_POST["sdari"]))
 {
-	$search = mysql_real_escape_string($_POST["search"]);
+	$search = mysqli_real_escape_string($conn, $_POST["search"]);
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE dari LIKE '%{$search}%';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BDari: &B&U' . $search . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -292,10 +377,29 @@ if (isset($_POST["sdari"]))
 
 if (isset($_POST["skepada"]))
 {
-	$search = mysql_real_escape_string($_POST["search"]);
+	$search = mysqli_real_escape_string($conn, $_POST["search"]);
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE kepada LIKE '%{$search}%';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BKepada: &B&U' . $search . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -321,10 +425,30 @@ if (isset($_POST["skepada"]))
 
 if (isset($_POST["stterima"]))
 {
-	$search = mysql_real_escape_string($_POST["search"]);
+	$search = mysqli_real_escape_string($conn, $_POST["search"]);
+	$tsearch = date("d-m-Y", strtotime($search));
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE tterima = '{$search}';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BTarikh Terima: &B&U' . $tsearch . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -350,10 +474,30 @@ if (isset($_POST["stterima"]))
 
 if (isset($_POST["stsurat"]))
 {
-	$search = mysql_real_escape_string($_POST["search"]);
+	$search = mysqli_real_escape_string($conn, $_POST["search"]);
+	$tsearch = date("d-m-Y", strtotime($search));
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE tsurat = '{$search}';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BTarikh Surat: &B&U' . $tsearch . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -376,13 +520,35 @@ if (isset($_POST["stsurat"]))
       </tr>';
 	}
 }
+
 if (isset($_POST["satterima"]))
 {
-	$searcha = mysql_real_escape_string($_POST["searcha"]);
-	$searchb = mysql_real_escape_string($_POST["searchb"]);
+	$searcha = mysqli_real_escape_string($conn, $_POST["searcha"]);
+	$searchb = mysqli_real_escape_string($conn, $_POST["searchb"]);
+	$tsearcha = date("d-m-Y", strtotime($searcha));
+	$tsearchb = date("d-m-Y", strtotime($searchb));
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE tterima BETWEEN '{$searcha}' AND '{$searchb}';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BTarikh Terima Antara: &B&U' . $tsearcha . ' - ' . $tsearchb . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -408,11 +574,32 @@ if (isset($_POST["satterima"]))
 
 if (isset($_POST["satsurat"]))
 {
-	$searcha = mysql_real_escape_string($_POST["searcha"]);
-	$searchb = mysql_real_escape_string($_POST["searchb"]);
+	$searcha = mysqli_real_escape_string($conn, $_POST["searcha"]);
+	$searchb = mysqli_real_escape_string($conn, $_POST["searchb"]);
+	$tsearcha = date("d-m-Y", strtotime($searcha));
+	$tsearchb = date("d-m-Y", strtotime($searchb));
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE tsurat BETWEEN '{$searcha}' AND '{$searchb}';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BTarikh Surat Antara: &B&U' . $tsearcha . '-' . $tsearchb . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -435,12 +622,32 @@ if (isset($_POST["satsurat"]))
       </tr>';
 	}
 }
+
 if (isset($_POST["sklt"]))
 {
-	$search = mysql_real_escape_string($_POST["search"]);
+	$search = mysqli_real_escape_string($conn, $_POST["search"]);
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE klt = '{$search}';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BKlt: &B&U' . $search . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -480,8 +687,27 @@ if (isset($_POST["bstsurat"]))
 	}
 
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE Month(tsurat) = '{$month}' AND Year(tsurat) = '{$year}';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BTarikh Surat Bulan: &B&U' . $month . '/' . $year . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -521,8 +747,27 @@ if (isset($_POST["bstterima"]))
 	}
 
 	$select = mysqli_query($conn, "SELECT * FROM record WHERE Month(tterima) = '{$month}' AND Year(tterima) = '{$yearw}';");
+	$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&LResult - &BTarikh Terima Bulan: &B&U' . $month . '/' . $yearw . '&RPage &P of &N');
 	while ($row = mysqli_fetch_assoc($select))
 	{
+		$i+= 1;
+		$Ptterima = date("d-m-Y", strtotime($row["tterima"]));
+		$Ptsurat = date("d-m-Y", strtotime($row["tsurat"]));
+		$objPHPExcel->getActiveSheet()->getStyle('A' . $i . ':G' . $i)->applyFromArray(array(
+			'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'rgb' => '808080'
+				)
+			)
+		));
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $row["no"])->setCellValue('B' . $i, $Ptterima)->setCellValue('C' . $i, $Ptsurat)->setCellValue('D' . $i, $row["dari"])->setCellValue('E' . $i, $row["kepada"])->setCellValue('F' . $i, $row["perkara"])->setCellValue('G' . $i, $row["klt"]);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$objPHPExcel->getActiveSheet()->getStyle('B1:B' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('C1:C' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('F1:F' . $i)->getAlignment()->setWrapText(true);
+		$objPHPExcel->getActiveSheet()->getStyle('D1:D' . $i)->getAlignment()->setWrapText(true);
 		echo '
 			  <tr>
         <td>' . $row["no"] . '</td>
@@ -544,6 +789,19 @@ if (isset($_POST["bstterima"]))
 		</td>
       </tr>';
 	}
+}
+
+$objPHPExcel->getActiveSheet()->setTitle('Data Surat Masuk');
+
+// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+
+$objPHPExcel->setActiveSheetIndex(0);
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+$objWriter->save(str_replace('.php', '.xls', __FILE__));
+
+if (isset($_POST["sperkara"]) || isset($_POST["sdari"]) || isset($_POST["skepada"]) || isset($_POST["stterima"]) || isset($_POST["stsurat"]) || isset($_POST["satterima"]) || isset($_POST["stsurat"]) || isset($_POST["sklt"]) || isset($_POST["bstterima"]) || isset($_POST["bstsurat"]))
+{
+	echo "<a href='./search.xls' class=\"btn btn-danger\"><span class=\"glyphicon glyphicon-save\"></span> Muat Turun Excel</a>";
 }
 
 ?>
