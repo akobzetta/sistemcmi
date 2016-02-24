@@ -22,7 +22,8 @@ I need help to fix and complete this project. more info contact me at akob@zetta
  * PHPExcel
  * ----------
  * password encryption bcrypt
- * last update 23/2/2016
+ * MySQLi Procedural
+ * last update 24/2/2016
  * 
  
 ## Credits to 
