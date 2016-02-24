@@ -16,10 +16,10 @@ if (isset($_POST["pass"]))
   <div class="panel-heading">Log Masuk</div>
   <div class="panel-body">
   
-  <form role="form" action="#" method="post">
+  <form role="form" action="index" method="post">
   <div class="form-group">
     <label for="username"><span class="glyphicon glyphicon-user"></span> Nama Pengguna:</label>
-    <input type="text" name="username" class="form-control" id="email">
+    <input type="text" name="username" class="form-control" id="email" value="Admin">
   </div>
   <div class="form-group">
     <label for="pwd"><span class="glyphicon glyphicon-lock"></span> Katalaluan:</label>
