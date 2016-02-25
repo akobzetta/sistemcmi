@@ -7,8 +7,8 @@
 			<?php
 				if(isset($_POST["record"]))
 				{	
-					if($_POST["tterima"] != null && $_POST["klt"] != null && $_POST["tsurat"] != null && $_POST["dari"] != null && $_POST["perkara"] != null) 
-					{
+					//if($_POST["tterima"] != null && $_POST["klt"] != null && $_POST["tsurat"] != null && $_POST["dari"] != null && $_POST["perkara"] != null) 
+					//{
 						$nocheck = mysqli_query($conn, "SELECT * FROM record ORDER BY id DESC LIMIT 1");
 						if(mysqli_num_rows($nocheck) == 0)
 						{
@@ -38,16 +38,16 @@
 							<strong>!</strong> Data ditambah.
 						</div>
 						<?php 
-					} 
-					else
-					{
-						?>
-						<div class="alert alert-danger">
-							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-							<strong>!</strong> Sila isi semua Borang.
-						</div>
-						<?php
-					}
+				//	} 
+				//	else
+				//	{
+				//		echo "
+				//		<div class=\"alert alert-danger\">
+				//			<a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>
+				//			<strong>!</strong> Sila isi semua Borang.
+				//		</div>
+				//		";
+				//	}
 				}
 				?>
 				
@@ -231,7 +231,7 @@ if(isset($_POST["save"]))
 $limit = 10;
 $ttl1 = mysqli_query($conn, "SELECT * FROM record");
 $total = mysqli_num_rows($ttl1);
-$totalpage = $total/$limit;
+$totalpage = ceil($total/$limit);
 if(isset($_GET["page"]))
 {
 	$getpage = $_GET["page"];
@@ -339,24 +339,36 @@ echo "
       </a>
     </li>";
   }
+    if($totalpage > 1)
+  {
  echo "<li ";
   if($getpage == $totalpage)
   {
 	  echo "class=\"active\"";
   }
+
   echo "><a href=\"?page={$totalpage}\">Akhir</a></li>
+ ";
+  }
+  echo 
+  "
 
 </ul>
 <ul class=\"pagination\">
-<li>
-  <span>Muka ".$getpage."/".$totalpage."</span>
+<li><span>Muka ".$getpage."/".$totalpage."</span>
   </li>
   </ul>
 ";
+if($totalpage == 0)
+{
+	$percent = 100;
+}
+else
+{
 $percent = ($getpage/$totalpage)*100;
+}
 echo "<div class=\"progress\">
 <div class=\"progress-bar progress-bar-info\" role=\"progressbar\" style=\"width:{$percent}%\">
- 
   </div>
    
   </div>";
@@ -414,7 +426,7 @@ echo "<div class=\"progress\">
 $limit = 10;
 $ttl1 = mysqli_query($conn, "SELECT * FROM record");
 $total = mysqli_num_rows($ttl1);
-$totalpage = $total/$limit;
+$totalpage = ceil($total/$limit);
 if(isset($_GET["page"]))
 {
 	$getpage = $_GET["page"];
@@ -522,20 +534,26 @@ echo "
       </a>
     </li>";
   }
+    if($totalpage > 1)
+  {
  echo "<li ";
   if($getpage == $totalpage)
   {
 	  echo "class=\"active\"";
   }
+
   echo "><a href=\"?page={$totalpage}\">Akhir</a></li>
+ ";
+  }
+  echo 
+  "
+
 </ul>
 <ul class=\"pagination\">
-<li>
-  <span>Muka ".$getpage."/".$totalpage."</span>
+<li><span>Muka ".$getpage."/".$totalpage."</span>
   </li>
   </ul>
 ";
-
 ?>
   
   <form action="#" method="post">
