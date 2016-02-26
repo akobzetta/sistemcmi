@@ -117,7 +117,7 @@
       </tr>
     </thead>
     <tbody>
-	<?php $get1 = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
+	<?php $get1 = mysqli_query($conn, "SELECT * FROM users WHERE username != '{$_COOKIE["userlogin"]}' ORDER BY id DESC");
 	while($log = mysqli_fetch_assoc($get1))
 	{
 	?>
