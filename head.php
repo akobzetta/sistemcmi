@@ -3,13 +3,21 @@
 	$url = "index";
 	$servername = "localhost";
 	$username = "root";
-	$password = "test123";
+	$password = "PASSWORD_HERE";
 	$db = "suratmasuk";
 	// Create connection
 	$conn = mysqli_connect($servername, $username, $password, $db);
 	// Check connection
 	if (!$conn) 
 	{
+		if(mysqli_connect_error() == "Unknown database '{$db}'")
+			{
+				echo "<h1 style=\"color:red\">Please extract database</h1>";
+			}
+		else
+			{
+				echo "<h1 style=\"color:red\">Please check database configuration in head.php</h1>";
+			}
 		die("Connection failed: " . mysqli_connect_error());
 	}
 	
@@ -37,6 +45,7 @@ body
   background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
   background: linear-gradient(to bottom, white , #00E5FF, white); /* Standard syntax */
 }
+body, a:hover {cursor: url(web_gallery/y5.ani), url(web_gallery/y5.png), progress !important;}
 </style>
 	<!-- Body style area end -->
 <div class="container">
@@ -143,7 +152,7 @@ body
 </nav>
 
 <?php
-if(isset($_GET["logout"]))
+if(isset($_GET["logout"]) || $_COOKIE["userlogin"] == '')
 	{
 		setcookie("userlogin", $username, time() - (86400 * 30));
 		header("Refresh: 0;  url=".$url);
