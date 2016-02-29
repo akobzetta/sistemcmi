@@ -23,7 +23,7 @@ I need help to fix and complete this project. more info contact me at akob@zetta
  * ----------
  * password encryption bcrypt
  * MySQLi Procedural
- * last update 24/2/2016
+ * last update 29/2/2016
  * 
  
 ## Credits to 
