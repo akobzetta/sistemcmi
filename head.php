@@ -193,7 +193,7 @@ if(isset($_POST["loginuser"]))
 							if (password_verify($pwd, $login2["password"])) 
 							{
 								mysqli_query($conn, "INSERT INTO login_log (name, time) VALUES ('{$username}', '".time()."')");
-								session_start();
+
 								$_SESSION["userlogin"] = $username;
 								?>
 								<div class="alert alert-success">
