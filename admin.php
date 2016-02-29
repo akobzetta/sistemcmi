@@ -1,13 +1,13 @@
 	<?php
 		$page_admin = "selected";
 		require_once("head.php");
-		if(!isset($_COOKIE["userlogin"]))
+		if(!isset($_SESSION["userlogin"]))
 		{
 			header("Location:".$url);
 		}
 	?>
 	<?php
-	$checkrank = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_COOKIE["userlogin"]}'");
+	$checkrank = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_SESSION["userlogin"]}'");
 	while($check = mysqli_fetch_assoc($checkrank))
 	{
 	if($check["rank"] == 3)
@@ -117,7 +117,7 @@
       </tr>
     </thead>
     <tbody>
-	<?php $get1 = mysqli_query($conn, "SELECT * FROM users WHERE username != '{$_COOKIE["userlogin"]}' ORDER BY id DESC");
+	<?php $get1 = mysqli_query($conn, "SELECT * FROM users WHERE username != '{$_SESSION["userlogin"]}' ORDER BY id DESC");
 	while($log = mysqli_fetch_assoc($get1))
 	{
 	?>
@@ -196,6 +196,6 @@
 	}
 	}
 	?>
-<span class="glyphicon glyphicon-copyright-mark"></span> Sistem surat masuk CMI V0.1
+<span class="glyphicon glyphicon-copyright-mark"></span> Sistem surat masuk CMI V3.1.3
 	</div>
 	</body>

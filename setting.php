@@ -2,7 +2,7 @@
 	<?php
 		$page_setting = "selected";
 		require_once("head.php");
-		if(!isset($_COOKIE["userlogin"]))
+		if(!isset($_SESSION["userlogin"]))
 		{
 			header("Location:".$url);
 		}
@@ -33,13 +33,13 @@
 						$current = mysqli_real_escape_string($conn, $_POST["current"]);
 						$new = mysqli_real_escape_string($conn, $_POST["new"]);
 						$new1 = mysqli_real_escape_string($conn, $_POST["new1"]);
-						$select = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_COOKIE["userlogin"]}'");
+						$select = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_SESSION["userlogin"]}'");
 						while($row = mysqli_fetch_assoc($select))
 						{
 							$password = password_hash($new, PASSWORD_DEFAULT);
 							if (password_verify($current, $row["password"])) 
 							{
-								mysqli_query($conn, "UPDATE users SET password = '{$password}' WHERE username =  '{$_COOKIE["userlogin"]}'");
+								mysqli_query($conn, "UPDATE users SET password = '{$password}' WHERE username =  '{$_SESSION["userlogin"]}'");
 								echo "<div class=\"alert alert-success\">
 						<a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>
 						<strong>Berjaya!</strong> Katalaluan baru disimpan.
