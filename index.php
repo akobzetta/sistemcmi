@@ -1,5 +1,6 @@
 
 	<?php
+	
 		$page_home = "selected";
 		require_once("head.php");
 	?>
@@ -83,7 +84,7 @@
 			<!-- -->
 		<?php
 			
-			if(isset($_COOKIE["userlogin"]))
+			if(isset($_SESSION["userlogin"]))
 			{
 			?>
 			<div class="panel panel-default">
@@ -391,7 +392,7 @@ echo "<div class=\"progress\">
 	
 	<?php
 	
-	$select = mysqli_query($conn, "SELECT * FROM record ORDER BY id DESC LIMIT $offset, $limit");
+	$select = mysqli_query($conn, "SELECT * FROM record ORDER BY klt DESC , no DESC LIMIT $offset, $limit");
 	
 	
 	while($row = mysqli_fetch_assoc($select))

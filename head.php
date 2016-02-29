@@ -1,9 +1,10 @@
 <?php
+	session_start();
 	date_default_timezone_set("Asia/Kuala_Lumpur");
 	$url = "index";
 	$servername = "localhost";
 	$username = "root";
-	$password = "PASSWORD_HERE";
+	$password = "5158783891";
 	$db = "suratmasuk";
 	// Create connection
 	$conn = mysqli_connect($servername, $username, $password, $db);
@@ -35,6 +36,13 @@
 	</head>
 	<body>
 	<!-- Body style area -->
+<script type="text/javascript">
+        function preloader(){
+            document.getElementById("preloader").style.display = "none";
+            document.getElementById("container").style.display = "block";
+        }//preloader
+        window.onload = preloader;
+</script>
 	<style>
 body
 {
@@ -48,7 +56,7 @@ body
 body, a:hover {cursor: url(web_gallery/y5.ani), url(web_gallery/y5.png), progress !important;}
 </style>
 	<!-- Body style area end -->
-<div class="container">
+
 
 <nav class="navbar navbar-inverse">
 	<div class="container-fluid">
@@ -89,9 +97,9 @@ body, a:hover {cursor: url(web_gallery/y5.ani), url(web_gallery/y5.png), progres
 				<a href="export"><span class="glyphicon glyphicon-save"></span> Eksport</a>
 			</li>
 			<?php
-				if(isset($_COOKIE["userlogin"]))
+				if(isset($_SESSION["userlogin"]))
 				{
-					$rankcheck = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_COOKIE["userlogin"]}' LIMIT 1");
+					$rankcheck = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_SESSION["userlogin"]}' LIMIT 1");
 					while($rank = mysqli_fetch_assoc($rankcheck))
 					{
 						if($rank["rank"] == 3)
@@ -113,7 +121,7 @@ body, a:hover {cursor: url(web_gallery/y5.ani), url(web_gallery/y5.png), progres
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
 			<?php
-			if(isset($_COOKIE["userlogin"]))
+			if(isset($_SESSION["userlogin"]))
 			{ ?>
 				<li class="<?php 
 							if(isset($page_setting))
@@ -122,7 +130,7 @@ body, a:hover {cursor: url(web_gallery/y5.ani), url(web_gallery/y5.png), progres
 							}
 			?> dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> <?php
-					$user1 = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_COOKIE["userlogin"]}' LIMIT 1");
+					$user1 = mysqli_query($conn, "SELECT * FROM users WHERE username = '{$_SESSION["userlogin"]}' LIMIT 1");
 					while($user2 = mysqli_fetch_assoc($user1))
 					{
 						echo $user2["username"];
@@ -150,11 +158,12 @@ body, a:hover {cursor: url(web_gallery/y5.ani), url(web_gallery/y5.png), progres
 		</ul>
 	</div>
 </nav>
-
+	<div id="preloader">Loading... Please Wait.</div>
+<div class="container" id="container" style="display: none;">
 <?php
-if(isset($_GET["logout"]) || $_COOKIE["userlogin"] == '')
+if(isset($_GET["logout"]))
 	{
-		setcookie("userlogin", $username, time() - (86400 * 30));
+		session_destroy();
 		header("Refresh: 0;  url=".$url);
 		?>
 		<div class="alert alert-success">
@@ -184,8 +193,8 @@ if(isset($_POST["loginuser"]))
 							if (password_verify($pwd, $login2["password"])) 
 							{
 								mysqli_query($conn, "INSERT INTO login_log (name, time) VALUES ('{$username}', '".time()."')");
-								setcookie("userlogin", $username, time() + (86400 * 30));
-								
+								session_start();
+								$_SESSION["userlogin"] = $username;
 								?>
 								<div class="alert alert-success">
 							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
