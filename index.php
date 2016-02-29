@@ -50,6 +50,54 @@
 				//		";
 				//	}
 				}
+				if(isset($_POST["edit"]))
+{
+	$edit = mysqli_query($conn, "SELECT * FROM record WHERE id = '{$_POST["id"]}'");
+	while($edit1 = mysqli_fetch_assoc($edit))
+	{
+		echo "<div class=\"panel panel-info\">
+  <div class=\"panel-heading\">Ubah</div>
+  <div class=\"panel-body\">
+  
+  <form class=\"form-inline\" role=\"form\" action=\"#\" method=\"post\">
+  <input name=\"id\" type=\"number\" value=\"".$_POST["id"]."\" hidden=\"hidden\" style=\"display: none;\">
+  <center>
+  <div class=\"form-group\">
+    <label for=\"tterima\"><span class=\"glyphicon glyphicon-calendar\"></span> Tarikh Terima:</label>
+    <input name=\"tterima\" type=\"date\" class=\"form-control\" id=\"tterima\" value=\"{$edit1["tterima"]}\">
+  </div>
+  <div class=\"form-group\">
+  <label for=\"klt\"><span class=\"glyphicon glyphicon-file\"></span> klt.:</label>
+    <input name=\"klt\" type=\"number\"  class=\"form-control\" id=\"klt\" value=\"{$edit1["klt"]}\">
+  </div><br>
+  <div class=\"form-group\">
+    <label for=\"tsurat\"><span class=\"glyphicon glyphicon-calendar\"></span> Tarikh Surat:</label>
+    <input name=\"tsurat\" type=\"date\" class=\"form-control\" id=\"tsurat\" value=\"{$edit1["tsurat"]}\">
+  </div>
+  <div class=\"form-group\">
+    <label for=\"dari\"><span class=\"glyphicon glyphicon-save-file\"></span> Dari:</label>
+    <input name=\"dari\" type=\"text\" class=\"form-control\" id=\"dari\" value=\"{$edit1["dari"]}\">
+  </div>
+  <div class=\"form-group\">
+    <label for=\"kepada\"><span class=\"glyphicon glyphicon-open-file\"></span> Kepada:</label>
+    <input name=\"kepada\" type=\"text\" class=\"form-control\" id=\"kepada\" value=\"{$edit1["kepada"]}\">
+  </div>
+  <br>
+  <div class=\"form-group\">
+  <label for=\"perkara\"><span class=\"glyphicon glyphicon-book\"></span> Perkara:</label>
+  <textarea name=\"perkara\" class=\"form-control\" rows=\"5\" id=\"perkara\"> {$edit1["perkara"]}</textarea>
+</div>
+<br>
+<br>
+  <button name=\"save\" type=\"submit\" class=\"btn btn-success\"><span class=\"glyphicon glyphicon-floppy-disk\"></span> Simpan</button>
+  <button name=\"\" type=\"submit\" class=\"btn btn-warning\"><span class=\"glyphicon glyphicon-remove\"></span> Batal</button>
+  </center>
+</form>
+  
+  </div>
+</div>";
+	}
+}
 				?>
 				
 <div id="loginModal" class="modal fade" role="dialog">
@@ -163,54 +211,7 @@ if(isset($_POST["do-delete"]))
 </div>
 	<?php
 }
-if(isset($_POST["edit"]))
-{
-	$edit = mysqli_query($conn, "SELECT * FROM record WHERE id = '{$_POST["id"]}'");
-	while($edit1 = mysqli_fetch_assoc($edit))
-	{
-		echo "<div class=\"panel panel-info\">
-  <div class=\"panel-heading\">Ubah</div>
-  <div class=\"panel-body\">
-  
-  <form class=\"form-inline\" role=\"form\" action=\"#\" method=\"post\">
-  <input name=\"id\" type=\"number\" value=\"".$_POST["id"]."\" hidden=\"hidden\" style=\"display: none;\">
-  <center>
-  <div class=\"form-group\">
-    <label for=\"tterima\"><span class=\"glyphicon glyphicon-calendar\"></span> Tarikh Terima:</label>
-    <input name=\"tterima\" type=\"date\" class=\"form-control\" id=\"tterima\" value=\"{$edit1["tterima"]}\">
-  </div>
-  <div class=\"form-group\">
-  <label for=\"klt\"><span class=\"glyphicon glyphicon-file\"></span> klt.:</label>
-    <input name=\"klt\" type=\"number\"  class=\"form-control\" id=\"klt\" value=\"{$edit1["klt"]}\">
-  </div><br>
-  <div class=\"form-group\">
-    <label for=\"tsurat\"><span class=\"glyphicon glyphicon-calendar\"></span> Tarikh Surat:</label>
-    <input name=\"tsurat\" type=\"date\" class=\"form-control\" id=\"tsurat\" value=\"{$edit1["tsurat"]}\">
-  </div>
-  <div class=\"form-group\">
-    <label for=\"dari\"><span class=\"glyphicon glyphicon-save-file\"></span> Dari:</label>
-    <input name=\"dari\" type=\"text\" class=\"form-control\" id=\"dari\" value=\"{$edit1["dari"]}\">
-  </div>
-  <div class=\"form-group\">
-    <label for=\"kepada\"><span class=\"glyphicon glyphicon-open-file\"></span> Kepada:</label>
-    <input name=\"kepada\" type=\"text\" class=\"form-control\" id=\"kepada\" value=\"{$edit1["kepada"]}\">
-  </div>
-  <br>
-  <div class=\"form-group\">
-  <label for=\"perkara\"><span class=\"glyphicon glyphicon-book\"></span> Perkara:</label>
-  <textarea name=\"perkara\" class=\"form-control\" rows=\"5\" id=\"perkara\"> {$edit1["perkara"]}</textarea>
-</div>
-<br>
-<br>
-  <button name=\"save\" type=\"submit\" class=\"btn btn-success\"><span class=\"glyphicon glyphicon-floppy-disk\"></span> Simpan</button>
-  <button name=\"\" type=\"submit\" class=\"btn btn-warning\"><span class=\"glyphicon glyphicon-remove\"></span> Batal</button>
-  </center>
-</form>
-  
-  </div>
-</div>";
-	}
-}
+
 if(isset($_POST["save"]))
 {
 	$tterima = mysqli_real_escape_string($conn, $_POST["tterima"]);
